@@ -189,20 +189,35 @@ class Topology(object):
                      'constructorArgs': []}
         if isinstance(spec, ShellComponentSpec):
             if isinstance(spec, ShellBoltSpec):
-                flux_dict['className'] = 'org.apache.storm.flux.wrappers.bolts.FluxShellBolt'
+                flux_dict['className'] = 'org.apache.storm.flux.wrappers.bolts.XFluxShellBolt'
             else:
-                flux_dict['className'] = 'org.apache.storm.flux.wrappers.spouts.FluxShellSpout'
+                flux_dict['className'] = 'org.apache.storm.flux.wrappers.spouts.XFluxShellSpout'
             shell_object = spec.component_object.shell
             flux_dict['constructorArgs'].append([shell_object.execution_command,
                                                  shell_object.script])
-            output_fields = ['NONE_BUT_FLUX_WANTS_SOMETHING_HERE']
-            if 'default' in spec.outputs:
-                output_fields = spec.outputs['default'].output_fields
-            flux_dict['constructorArgs'].append(output_fields)
-            if set(spec.outputs.keys()) - {'default'}:
-                raise TypeError('Flux does not currently support ShellBolts '
-                                'with multiple streams. Given: {!r}'
-                                .format(spec))
+            flux_dict['configMethods'] = []
+            for key in spec.outputs.keys():
+                if key == 'default':
+                    flux_dict['configMethods'].append({
+                        'name': 'setDefaultStream',
+                        "args": [spec.outputs['default'].output_fields]
+                    })
+                else:
+                    flux_dict['configMethods'].append({
+                        'name': 'setNamedStream',
+                        "args": [key, spec.outputs[key].output_fields]
+                    })
+
+            if spec.config:
+                import json
+                dconf = spec.config
+                if not isinstance(spec.config, dict):
+                    dconf = json.loads(spec.config)
+                for key, value in dconf.iteritems():
+                    flux_dict['configMethods'].append({
+                        'name': 'addComponentConfig',
+                        "args": [key, value]
+                    })
         else:
             if spec.component_object.serialized_java is not None:
                 raise TypeError('Flux does not support specifying serialized '
