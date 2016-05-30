@@ -212,7 +212,8 @@ def submit_topology(name=None, env_name="prod", workers=None, ackers=None,
     # Additional options
     additional_options = env_config.get('options', None)
     if additional_options and type(additional_options) == dict:
-        additional_options.update(options)
+        if type(options) == dict:
+            additional_options.update(options)
         options = additional_options
     if not workers:
         workers = env_config.get('worker_count', 2)
