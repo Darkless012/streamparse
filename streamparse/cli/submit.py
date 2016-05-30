@@ -216,10 +216,10 @@ def submit_topology(name=None, env_name="prod", workers=None, ackers=None,
             additional_options.update(options)
         options = additional_options
 
-    #if workers is None:
-    workers = env_config.get('worker_count', 2)
-    #if ackers is None:
-    ackers = env_config.get('acker_count', 2)
+    if workers is None:
+        workers = env_config.get('worker_count', 2)
+    if ackers is None:
+        ackers = env_config.get('acker_count', 2)
 
     # Check topology for JVM stuff to see if we need to create uber-jar
     if simple_jar:
