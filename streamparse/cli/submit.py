@@ -211,8 +211,8 @@ def submit_topology(name=None, env_name="prod", workers=None, ackers=None,
 
     # Additional options
     additional_options = env_config.get('options', None)
-    if additional_options and type(additional_options) == dict:
-        if type(options) == dict:
+    if additional_options and isinstance(additional_options, dict):
+        if isinstance(options, dict):
             additional_options.update(options)
         options = additional_options
     if not workers:
