@@ -69,7 +69,7 @@ setup(
     url='https://github.com/Parsely/streamparse',
     description=('streamparse lets you run Python code against real-time '
                  'streams of data. Integrates with Apache Storm.'),
-    long_description=readme(),
+    long_description='Long description',
     license='Apache License 2.0',
     packages=find_packages(),
     entry_points={
